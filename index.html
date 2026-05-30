@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>VALOSTATS — by Fuan Shen</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --red:#FF4655;--dark:#0a0c10;--dark2:#12151b;--dark3:#1a1e27;--dark4:#222736;
+      --border:rgba(255,70,85,0.25);--border2:rgba(255,255,255,0.07);
+      --text:#e8eaf0;--dim:#7a7d95;--gold:#f0c040;--green:#2ee89a;--blue:#4fc3f7;--purple:#ab77ff;
+      --fh:'Rajdhani',sans-serif;--fb:'Barlow',sans-serif;--fc:'Barlow Condensed',sans-serif;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--dark);color:var(--text);font-family:var(--fb);min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,70,85,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,70,85,0.035) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0}
+    .orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}
+    .orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(255,70,85,0.13) 0%,transparent 70%);top:-200px;left:-100px;animation:of 14s ease-in-out infinite}
+    .orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(171,119,255,0.08) 0%,transparent 70%);top:40%;right:-150px;animation:of 14s ease-in-out infinite;animation-delay:-5s}
+    .orb3{width:400px;height:400px;background:radial-gradient(circle,rgba(46,232,154,0.06) 0%,transparent 70%);bottom:-100px;left:30%;animation:of 14s ease-in-out infinite;animation-delay:-9s}
+    @keyframes of{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(28px,-36px) scale(1.04)}66%{transform:translate(-18px,18px) scale(0.97)}}
+    .wrap{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 20px}
+
+    /* ===== HEADER ===== */
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 0;border-bottom:1px solid var(--border2);margin-bottom:0}
+
+    /* Creative logo */
+    .logo{display:flex;align-items:center;gap:14px;text-decoration:none}
+    .logo-icon{position:relative;width:44px;height:44px;flex-shrink:0}
+    .logo-diamond{width:44px;height:44px;background:var(--red);transform:rotate(45deg);border-radius:4px;box-shadow:0 0 24px rgba(255,70,85,0.6),0 0 60px rgba(255,70,85,0.2);position:absolute;top:0;left:0}
+    .logo-v{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:700;font-size:20px;color:#fff;letter-spacing:0;z-index:1;text-shadow:0 0 10px rgba(255,255,255,0.5)}
+    .logo-slash{position:absolute;bottom:-2px;right:-6px;width:18px;height:3px;background:var(--gold);border-radius:1px;transform:rotate(-30deg);box-shadow:0 0 8px var(--gold)}
+    .logo-text-block{}
+    .logo-wordmark{font-family:var(--fh);font-size:24px;font-weight:700;letter-spacing:4px;color:#fff;line-height:1;display:flex;align-items:baseline;gap:0}
+    .logo-wordmark .v1{color:#fff}.logo-wordmark .accent{color:var(--red)}.logo-wordmark .v2{color:rgba(255,255,255,0.5);font-size:18px;letter-spacing:2px}
+    .logo-tagline{font-family:var(--fc);font-size:10px;letter-spacing:5px;color:var(--dim);text-transform:uppercase;margin-top:3px}
+    .live-pill{display:flex;align-items:center;gap:6px;background:rgba(46,232,154,0.08);border:1px solid rgba(46,232,154,0.2);border-radius:20px;padding:5px 14px;font-family:var(--fc);font-size:10px;letter-spacing:2px;color:var(--green);text-transform:uppercase}
+    .live-dot{width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+    /* ===== HERO ===== */
+    .hero{position:relative;padding:48px 0 38px;overflow:hidden;border-bottom:1px solid var(--border2);margin-bottom:32px}
+    .hero-bar{position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--red),rgba(255,70,85,0));box-shadow:0 0 20px rgba(255,70,85,0.4)}
+    .hero-agents{position:absolute;right:-30px;top:0;bottom:0;display:flex;align-items:flex-end;pointer-events:none}
+    .ha{object-fit:contain;object-position:bottom;height:100%;max-height:320px}
+    .ha:nth-child(1){opacity:.22;transform:translateX(28px)}.ha:nth-child(2){opacity:.3}.ha:nth-child(3){opacity:.16;transform:translateX(-18px)}
+    .hero-fade{position:absolute;right:0;top:0;bottom:0;width:340px;background:linear-gradient(90deg,var(--dark) 0%,transparent 100%);pointer-events:none}
+    .hero-content{position:relative;z-index:2}
+    .hero-eye{font-family:var(--fc);font-size:10px;letter-spacing:5px;color:var(--red);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+    .hero-eye::before{content:'';width:18px;height:1px;background:var(--red)}
+    .hero-h{font-family:var(--fh);font-size:clamp(46px,9vw,82px);font-weight:700;line-height:.88;letter-spacing:4px;color:#fff;text-transform:uppercase}
+    .hero-h .r{color:var(--red)}.hero-h .g{background:linear-gradient(135deg,var(--gold),var(--red));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .hero-desc{font-size:14px;color:var(--dim);margin-top:12px;max-width:400px;line-height:1.7}
+    .hero-feats{display:flex;gap:18px;margin-top:18px;flex-wrap:wrap}
+    .hf{display:flex;align-items:center;gap:6px;font-family:var(--fc);font-size:11px;letter-spacing:2px;color:var(--dim);text-transform:uppercase}
+    .hfd{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+    /* ===== AGENTS STRIP ===== */
+    .strip-lbl{font-family:var(--fc);font-size:10px;letter-spacing:4px;color:var(--dim);text-transform:uppercase;margin-bottom:10px}
+    .strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;margin-bottom:30px}
+    .strip::-webkit-scrollbar{display:none}
+    .chip{flex-shrink:0;width:52px;height:52px;border-radius:4px;overflow:hidden;border:1px solid var(--border2);background:var(--dark3);cursor:pointer;transition:all .2s}
+    .chip:hover{border-color:var(--red);transform:translateY(-4px);box-shadow:0 10px 22px rgba(255,70,85,0.35)}
+    .chip img{width:100%;height:100%;object-fit:cover}
+
+    /* ===== SEARCH ===== */
+    .search-card{background:var(--dark2);border:1px solid var(--border);border-radius:6px;padding:26px;margin-bottom:26px;position:relative;overflow:hidden}
+    .search-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),var(--purple),transparent)}
+    .slabel{font-family:var(--fc);font-size:10px;letter-spacing:4px;color:var(--red);text-transform:uppercase;margin-bottom:16px}
+    .srow{display:flex;gap:10px;flex-wrap:wrap}
+    .srow input,.srow select{background:var(--dark3);border:1px solid var(--border2);border-radius:4px;padding:12px 16px;color:var(--text);font-family:var(--fb);font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s}
+    .srow input:focus,.srow select:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(255,70,85,.1)}
+    .srow input::placeholder{color:var(--dim)}
+    #in{flex:2;min-width:150px}#it{flex:1;min-width:100px;max-width:140px}#ir{min-width:200px}
+    .srow select option{background:var(--dark3)}
+    .sbtn{background:linear-gradient(135deg,var(--red),#c0303c);border:none;border-radius:4px;padding:12px 32px;color:#fff;font-family:var(--fh);font-size:15px;font-weight:600;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .2s;white-space:nowrap;box-shadow:0 4px 20px rgba(255,70,85,.35)}
+    .sbtn:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(255,70,85,.5)}
+    .sbtn:active{transform:scale(.98)}
+
+    /* ===== LOADING ===== */
+    .loading{text-align:center;padding:80px 20px;display:none}
+    .la{width:130px;height:130px;object-fit:contain;margin:0 auto 24px;display:block;animation:flt 2s ease-in-out infinite;filter:drop-shadow(0 0 24px rgba(255,70,85,.5))}
+    @keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+    .lbars{display:flex;gap:6px;justify-content:center;margin-bottom:16px}
+    .lbars span{width:4px;height:36px;background:var(--red);border-radius:2px;animation:ba 1s ease-in-out infinite}
+    .lbars span:nth-child(2){animation-delay:.1s}.lbars span:nth-child(3){animation-delay:.2s}.lbars span:nth-child(4){animation-delay:.3s}.lbars span:nth-child(5){animation-delay:.4s}
+    @keyframes ba{0%,100%{transform:scaleY(.3);opacity:.3}50%{transform:scaleY(1);opacity:1}}
+    .ltxt{font-family:var(--fc);letter-spacing:4px;font-size:12px;color:var(--dim);text-transform:uppercase}
+
+    .err{background:rgba(255,70,85,.08);border:1px solid rgba(255,70,85,.3);border-radius:4px;padding:16px 20px;color:#ff8090;font-size:14px;display:none;margin-top:16px}
+    #result{display:none}
+
+    /* ===== SECTION HEADER ===== */
+    .sh{display:flex;align-items:center;gap:12px;font-family:var(--fc);font-size:10px;letter-spacing:4px;color:var(--red);text-transform:uppercase;margin-bottom:12px}
+    .sh::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+
+    /* ===== PROFILE ===== */
+    .profile-card{border-radius:6px;overflow:hidden;margin-bottom:18px;position:relative;background:var(--dark2);border:1px solid var(--border)}
+    .pbanner{height:100px;background:linear-gradient(135deg,#1a0810,#0f1520,#100a1a);position:relative;overflow:hidden}
+    .pbanner::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),var(--purple),var(--gold))}
+    .pbanner-agent{position:absolute;right:0;top:0;bottom:0;width:60%;overflow:hidden}
+    .pbanner-agent img{position:absolute;right:-10px;bottom:0;height:190%;object-fit:contain;object-position:bottom right;opacity:.28;filter:grayscale(10%)}
+    .pbanner-fade{position:absolute;inset:0;background:linear-gradient(90deg,var(--dark2) 15%,transparent 70%)}
+    .pbody{padding:0 22px 22px;position:relative}
+    .pav-row{display:flex;align-items:flex-end;gap:16px;margin-top:-36px;position:relative;z-index:2;margin-bottom:14px}
+
+    /* BIGGER agent avatar */
+    .pav{width:90px;height:120px;border-radius:5px;object-fit:cover;border:3px solid var(--dark2);box-shadow:0 6px 24px rgba(0,0,0,.6),0 0 0 1px rgba(255,70,85,.3);flex-shrink:0;background:var(--dark3)}
+    .pav-ph{width:90px;height:90px;border-radius:5px;background:var(--dark3);border:3px solid var(--dark2);box-shadow:0 6px 24px rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:36px;font-weight:700;color:var(--red);flex-shrink:0}
+    .pname{font-family:var(--fh);font-size:30px;font-weight:700;letter-spacing:2px;color:#fff;line-height:1}
+    .ptag{color:var(--red);font-size:22px}
+    .pmeta{font-family:var(--fc);font-size:11px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin-top:4px}
+    .ptags{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+    .pt{display:inline-flex;align-items:center;gap:5px;border-radius:3px;padding:4px 11px;font-family:var(--fc);font-size:10px;letter-spacing:2px;text-transform:uppercase}
+    .pt-gold{background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.2);color:var(--gold)}
+    .pt-red{background:rgba(255,70,85,.1);border:1px solid rgba(255,70,85,.2);color:var(--red)}
+    .pt-purple{background:rgba(171,119,255,.1);border:1px solid rgba(171,119,255,.2);color:var(--purple)}
+    .pt-blue{background:rgba(79,195,247,.1);border:1px solid rgba(79,195,247,.2);color:var(--blue)}
+
+    /* ===== STAT CARDS ===== */
+    .sg6{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:11px;margin-bottom:22px}
+    .sc{background:var(--dark2);border:1px solid var(--border2);border-radius:6px;padding:15px 17px;position:relative;overflow:hidden;transition:all .2s}
+    .sc:hover{border-color:rgba(255,70,85,.3);transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.4)}
+    .sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+    .sc-r::before{background:var(--red)}.sc-go::before{background:var(--gold)}.sc-gr::before{background:var(--green)}.sc-b::before{background:var(--blue)}.sc-p::before{background:var(--purple)}
+    .sc-lbl{font-family:var(--fc);font-size:9px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin-bottom:7px}
+    .sc-val{font-family:var(--fh);font-size:26px;font-weight:700;color:#fff;line-height:1}
+    .sc-val.red{color:var(--red)}.sc-val.gold{color:var(--gold);font-size:18px}.sc-val.green{color:var(--green)}.sc-val.blue{color:var(--blue);font-size:18px}.sc-val.purple{color:var(--purple);font-size:18px}
+    .sc-sub{font-family:var(--fc);font-size:10px;color:var(--dim);margin-top:4px;letter-spacing:1px}
+
+    /* ===== HEATMAP ===== */
+    .hm-wrap{background:var(--dark2);border:1px solid var(--border2);border-radius:6px;padding:22px;margin-bottom:22px;display:flex;gap:28px;align-items:center;flex-wrap:wrap;position:relative;overflow:hidden}
+    .hm-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--red),transparent)}
+    .body-svg{width:110px;height:240px;flex-shrink:0}
+    .hm-labels{flex:1;min-width:200px}
+    .hm-title{font-family:var(--fh);font-size:22px;font-weight:700;letter-spacing:2px;color:#fff;margin-bottom:2px}
+    .hm-sub{font-family:var(--fc);font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin-bottom:18px}
+    .hz-row{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+    .hz-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    .hz-info{flex:1}
+    .hz-name{font-family:var(--fh);font-size:15px;font-weight:600;letter-spacing:1px}
+    .hz-bg{height:5px;background:var(--dark4);border-radius:3px;margin-top:4px;overflow:hidden}
+    .hz-fill{height:100%;border-radius:3px}
+    .hz-pct{font-family:var(--fh);font-size:20px;font-weight:700;min-width:48px;text-align:right}
+    .aim-box{margin-top:16px;padding:12px 14px;background:var(--dark3);border-radius:4px;border-left:3px solid var(--green)}
+    .aim-title{font-family:var(--fc);font-size:9px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin-bottom:3px}
+    .aim-val{font-family:var(--fh);font-size:18px;font-weight:700}
+    .aim-desc{font-family:var(--fc);font-size:11px;color:var(--dim);margin-top:2px;letter-spacing:.5px}
+
+    /* ===== AGENT STATS ===== */
+    .ag{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:11px;margin-bottom:22px}
+    .ac{background:var(--dark2);border:1px solid var(--border2);border-radius:6px;padding:14px;display:flex;gap:12px;align-items:center;transition:all .2s;position:relative;overflow:hidden}
+    .ac:hover{border-color:rgba(255,70,85,.3);transform:translateY(-2px)}
+    .ac::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--red)}
+    /* BIGGER agent icon */
+    .ac-img{width:62px;height:62px;object-fit:cover;border-radius:5px;flex-shrink:0;border:1px solid var(--border2);box-shadow:0 4px 12px rgba(0,0,0,.4)}
+    .ac-info{flex:1;min-width:0}
+    .ac-name{font-family:var(--fh);font-size:16px;font-weight:600;color:#fff;letter-spacing:1px}
+    .ac-games{font-family:var(--fc);font-size:10px;color:var(--dim);letter-spacing:2px;text-transform:uppercase}
+    .ac-nums{display:flex;gap:11px;margin-top:7px}
+    .an{text-align:center}
+    .an-v{font-family:var(--fh);font-size:17px;font-weight:600;color:#fff;line-height:1}
+    .an-v.green{color:var(--green)}.an-v.gold{color:var(--gold)}.an-v.red{color:var(--red)}
+    .an-l{font-family:var(--fc);font-size:8px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;margin-top:2px}
+    .wr-bg{height:3px;background:var(--dark4);border-radius:2px;margin-top:7px;overflow:hidden}
+    .wr-fill{height:100%;border-radius:2px}
+
+    /* ===== MAPS ===== */
+    .mg{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:11px;margin-bottom:22px}
+    .mc{background:var(--dark2);border:1px solid var(--border2);border-radius:6px;overflow:hidden;transition:all .2s;position:relative}
+    .mc:hover{border-color:rgba(255,70,85,.3);transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.5)}
+    /* REAL MAP IMAGE */
+    .mc-img{width:100%;height:96px;object-fit:cover;display:block;opacity:.75;transition:opacity .3s}
+    .mc:hover .mc-img{opacity:.95}
+    .mc-overlay{position:absolute;top:0;left:0;right:0;height:96px;background:linear-gradient(180deg,transparent 40%,var(--dark2) 100%)}
+    .mc-body{padding:11px 13px}
+    .mc-name{font-family:var(--fh);font-size:15px;font-weight:600;color:#fff;letter-spacing:1px}
+    .mc-games{font-family:var(--fc);font-size:10px;letter-spacing:2px;color:var(--dim);text-transform:uppercase}
+    .mc-wr{font-family:var(--fh);font-size:20px;font-weight:700;margin-top:5px}
+    .mc-kd{font-family:var(--fc);font-size:10px;color:var(--dim);margin-top:3px;letter-spacing:.5px}
+    .best-badge{position:absolute;top:8px;right:8px;background:rgba(240,192,64,.9);color:#000;border-radius:2px;font-family:var(--fc);font-size:9px;letter-spacing:2px;padding:2px 7px;text-transform:uppercase;font-weight:600;z-index:2}
+
+    /* ===== MATCHES ===== */
+    .mb{background:var(--dark2);border:1px solid var(--border2);border-radius:6px;overflow:hidden;margin-bottom:40px}
+    .mr{display:flex;align-items:center;padding:12px 17px;border-bottom:1px solid var(--border2);gap:11px;transition:background .15s;position:relative}
+    .mr:last-child{border-bottom:none}
+    .mr:hover{background:var(--dark3)}
+    .mr.w::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green)}
+    .mr.l::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red)}
+    .mr-ico{width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid var(--border2);flex-shrink:0}
+    .mr-res{font-family:var(--fh);font-size:13px;font-weight:700;letter-spacing:2px;width:42px;flex-shrink:0}
+    .mr-res.w{color:var(--green)}.mr-res.l{color:var(--red)}
+    .mr-info{flex:1;min-width:0}
+    .mr-map{font-family:var(--fc);font-size:14px;font-weight:600;color:#fff;letter-spacing:1px}
+    .mr-det{font-family:var(--fc);font-size:10px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;margin-top:1px}
+    .mr-kda{font-family:var(--fh);font-size:15px;font-weight:600;white-space:nowrap}
+    .mr-kda .k{color:#fff}.mr-kda .sl{color:rgba(255,255,255,.15);margin:0 1px}.mr-kda .d{color:var(--red)}.mr-kda .a{color:var(--dim)}
+    .mr-hs{font-family:var(--fc);font-size:11px;color:var(--gold);letter-spacing:1px;white-space:nowrap}
+    .mr-sc{font-family:var(--fc);font-size:11px;color:var(--dim);letter-spacing:1px;white-space:nowrap}
+
+    /* ===== FOOTER ===== */
+    footer{border-top:1px solid var(--border2);padding:28px 0}
+    .footer-in{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+    .footer-agents{display:flex;gap:7px;flex-wrap:wrap}
+    .fa{width:28px;height:28px;border-radius:50%;object-fit:cover;opacity:.3;border:1px solid var(--border2);transition:opacity .2s}
+    .fa:hover{opacity:.8}
+    .footer-txt{font-family:var(--fc);font-size:10px;letter-spacing:2px;color:var(--dim)}
+    .footer-txt span{color:var(--red)}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    .fu{animation:fadeUp .4s ease forwards}
+    .d1{animation-delay:.05s;opacity:0}.d2{animation-delay:.1s;opacity:0}.d3{animation-delay:.15s;opacity:0}.d4{animation-delay:.2s;opacity:0}
+
+    @media(max-width:600px){
+      .srow{flex-direction:column}#it{max-width:100%}
+      .pname{font-size:22px}.mr-sc,.mr-det{display:none}.hero-agents{display:none}
+      .hero-h{font-size:42px}.footer-in{flex-direction:column;align-items:flex-start}
+      .hm-wrap{flex-direction:column;align-items:center}
+    }
+  </style>
+</head>
+<body>
+<div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">
+        <div class="logo-diamond"></div>
+        <div class="logo-v">V</div>
+        <div class="logo-slash"></div>
+      </div>
+      <div class="logo-text-block">
+        <div class="logo-wordmark">
+          <span class="v1">VALO</span><span class="accent">STATS</span>
+        </div>
+        <div class="logo-tagline">Player Tracker · by Fuan Shen</div>
+      </div>
+    </div>
+    <div class="live-pill"><span class="live-dot"></span>Live Data</div>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-bar"></div>
+    <div class="hero-agents">
+      <img class="ha" src="https://media.valorant-api.com/agents/f94c3b30-42be-e959-889c-5aa313dba261/fullportrait.png" alt=""/>
+      <img class="ha" src="https://media.valorant-api.com/agents/569fdd95-4d05-4f20-bd72-c6ea44b0bdc7/fullportrait.png" alt=""/>
+      <img class="ha" src="https://media.valorant-api.com/agents/1e58de9c-4950-5125-93e9-a0aee9f98746/fullportrait.png" alt=""/>
+    </div>
+    <div class="hero-fade"></div>
+    <div class="hero-content">
+      <div class="hero-eye">Valorant Stats Tracker</div>
+      <div class="hero-h">CHECK<br><span class="g">YOUR</span><br><span class="r">STATS</span></div>
+      <div class="hero-desc">Rank, win rate, headshot %, best agents, map performance and body heatmap — all in one place.</div>
+      <div class="hero-feats">
+        <div class="hf"><span class="hfd" style="background:var(--red)"></span>Rank & RR</div>
+        <div class="hf"><span class="hfd" style="background:var(--gold)"></span>Agent Stats</div>
+        <div class="hf"><span class="hfd" style="background:var(--green)"></span>Win Rate</div>
+        <div class="hf"><span class="hfd" style="background:var(--blue)"></span>Body Heatmap</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AGENTS STRIP -->
+  <div class="strip-lbl">// All Agents</div>
+  <div class="strip" id="strip"></div>
+
+  <!-- SEARCH -->
+  <div class="search-card">
+    <div class="slabel">// Search Player</div>
+    <div class="srow">
+      <input type="text" id="in" placeholder="Username (e.g. TenZ)"/>
+      <input type="text" id="it" placeholder="Tag (e.g. NA1)"/>
+      <select id="ir">
+        <option value="ap">Asia Pacific (MY/SG/PH)</option>
+        <option value="na">North America</option>
+        <option value="eu">Europe</option>
+        <option value="kr">Korea</option>
+        <option value="latam">Latin America</option>
+        <option value="br">Brazil</option>
+      </select>
+      <button class="sbtn" onclick="search()">SEARCH</button>
+    </div>
+  </div>
+
+  <div class="loading" id="loading">
+    <img class="la" src="https://media.valorant-api.com/agents/add6443a-41bd-e414-f6ad-e58d267f4e95/displayicon.png" alt=""/>
+    <div class="lbars"><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="ltxt">Fetching player data...</div>
+  </div>
+  <div class="err" id="err"></div>
+  <div id="result"></div>
+
+  <footer>
+    <div class="footer-in">
+      <div class="footer-agents" id="fagents"></div>
+      <div class="footer-txt">Made by <span>Fuan Shen</span> &nbsp;·&nbsp; Powered by <span>HenrikDev API</span> &nbsp;·&nbsp; Free Forever</div>
+    </div>
+  </footer>
+</div>
+
+<script>
+const AGENTS=[
+  {name:'Jett',uuid:'add6443a-41bd-e414-f6ad-e58d267f4e95'},
+  {name:'Reyna',uuid:'a3bfb853-43b2-7238-a4f1-ad90e9e46bcc'},
+  {name:'Neon',uuid:'bb2a4828-46eb-8cd1-e765-15848195d751'},
+  {name:'Phoenix',uuid:'eb93336a-449b-9c1e-0ac7-d50aac7bbb1a'},
+  {name:'Raze',uuid:'f94c3b30-42be-e959-889c-5aa313dba261'},
+  {name:'Sage',uuid:'569fdd95-4d05-4f20-bd72-c6ea44b0bdc7'},
+  {name:'Omen',uuid:'8e253930-4c05-31dd-1b6c-968525494517'},
+  {name:'Killjoy',uuid:'1e58de9c-4950-5125-93e9-a0aee9f98746'},
+  {name:'Sova',uuid:'320b2a48-4d9b-a075-30f1-1f93a9b638fa'},
+  {name:'Viper',uuid:'707eab51-4836-f488-046a-cda6bf494859'},
+  {name:'Cypher',uuid:'117ed9e3-49f3-6512-3ccf-0cada7e3823b'},
+  {name:'Breach',uuid:'5f8d3a7f-467b-97f3-062c-13acf203c006'},
+  {name:'Brimstone',uuid:'9f0d8ba9-4140-b941-57d3-a7ad57c6b417'},
+  {name:'Yoru',uuid:'7f94d92c-4234-0a36-9646-3a87eb8b5c89'},
+  {name:'Skye',uuid:'6f2a04ca-43e0-be17-7f36-b3908627744d'},
+  {name:'Astra',uuid:'41fb69c1-4189-7b37-f117-bcaf1e96f1bf'},
+  {name:'KAY/O',uuid:'601dbbe7-43ce-be57-2a40-4abd24953621'},
+  {name:'Chamber',uuid:'22697a3d-45bf-8dd7-4fec-84a9e28c69d7'},
+  {name:'Fade',uuid:'dade69b4-4f5a-8528-247b-219e5a1facd6'},
+  {name:'Harbor',uuid:'95b78ed7-4637-86d9-7e41-71ba8c293152'},
+];
+
+// Map name -> splash UUID (from valorant-api.com)
+const MAP_IMGS={
+  'Ascent':'7eaecc1b-4337-bbf6-6ab9-04b8f06b3319',
+  'Bind':'2c9d57ec-4431-9c5e-2939-8f9ef6dd5cba',
+  'Haven':'2bee0dc9-4ffe-519b-1cbd-7c9a6ac69a43',
+  'Split':'d960549e-485c-e861-8d71-aa9d1aed12a2',
+  'Fracture':'b529448b-4d60-346e-e89e-00a4c527a405',
+  'Breeze':'2fb9a4fd-47b8-4e7d-a969-74b4046ebd53',
+  'Icebox':'e2ad5c54-4114-a870-9641-8ea21279579a',
+  'Pearl':'fd267378-4d1d-484f-ff52-77821ed10dc2',
+  'Lotus':'2fe4ed3a-450a-01bc-91a1-d8ef6a801583',
+  'Sunset':'92584fbe-486a-b1b2-9faa-39601f7b0071',
+  'Abyss':'224b0a95-48b9-f703-1bd8-67aca101a61f',
+};
+
+function mapImgUrl(mapName){
+  const uuid=MAP_IMGS[mapName];
+  return uuid?`https://media.valorant-api.com/maps/${uuid}/splash.png`:'';
+}
+
+const strip=document.getElementById('strip');
+const fagents=document.getElementById('fagents');
+AGENTS.forEach(a=>{
+  const c=document.createElement('div');c.className='chip';c.title=a.name;
+  c.innerHTML=`<img src="https://media.valorant-api.com/agents/${a.uuid}/displayiconsmall.png" alt="${a.name}" loading="lazy"/>`;
+  strip.appendChild(c);
+  const fi=document.createElement('img');fi.className='fa';
+  fi.src=`https://media.valorant-api.com/agents/${a.uuid}/displayiconsmall.png`;
+  fi.alt=a.name;fi.title=a.name;fi.loading='lazy';
+  fagents.appendChild(fi);
+});
+
+function showErr(m){const b=document.getElementById('err');b.textContent=m;b.style.display='block';document.getElementById('loading').style.display='none';document.getElementById('result').style.display='none'}
+function hideErr(){document.getElementById('err').style.display='none'}
+function wrColor(w){return w>=55?'var(--green)':w>=50?'var(--gold)':'var(--red)'}
+function wrClass(w){return w>=55?'green':w>=50?'gold':'red'}
+function kda(k,d,a){return d===0?(k+a/2).toFixed(2):((k+a/2)/d).toFixed(2)}
+
+function buildHeatmap(hs,bs,ls){
+  const tot=hs+bs+ls||1;
+  const hp=Math.round(hs/tot*100),bp=Math.round(bs/tot*100),lp=Math.round(ls/tot*100);
+  const hi=3+hp/100*18,bi=2.5+bp/100*12,li=2+lp/100*10;
+  const hfill=`rgba(255,70,85,${0.2+hp/100*0.75})`,bfill=`rgba(240,192,64,${0.2+bp/100*0.75})`,lfill=`rgba(79,195,247,${0.15+lp/100*0.65})`;
+  const hstroke=`rgba(255,100,100,${0.6+hp/100*0.4})`,bstroke=`rgba(240,210,80,${0.6+bp/100*0.4})`,lstroke=`rgba(79,195,247,${0.5+lp/100*0.4})`;
+  const aimRating=hp>=40?'Headhunter 🎯':hp>=30?'Precise 🔥':hp>=20?'Average ⚡':'Body Spammer 💀';
+  const aimDesc=hp>=40?'You aim for the head consistently!':hp>=30?'Good headshot rate, keep it up':hp>=20?'Work on crosshair placement':'Stop shooting feet, aim higher!';
+  const aimColor=hp>=30?'var(--green)':hp>=20?'var(--gold)':'var(--red)';
+  return `<div class="hm-wrap">
+    <svg class="body-svg" viewBox="0 0 110 240" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="fh"><feGaussianBlur stdDeviation="${hi}" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="fb2"><feGaussianBlur stdDeviation="${bi}" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="fl"><feGaussianBlur stdDeviation="${li}" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- outlines -->
+      <ellipse cx="55" cy="26" rx="19" ry="22" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+      <rect x="48" y="45" width="14" height="11" rx="4" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+      <path d="M30 56 Q23 65 25 105 L85 105 Q87 65 80 56 Q68 49 55 49 Q42 49 30 56Z" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+      <path d="M30 58 Q18 65 16 96 Q18 104 23 102 Q28 100 30 90 L33 70Z" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+      <path d="M80 58 Q92 65 94 96 Q92 104 87 102 Q82 100 80 90 L77 70Z" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+      <path d="M40 106 Q36 132 34 174 Q33 190 40 192 Q48 194 52 174 L56 134 L55 120Z" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+      <path d="M70 106 Q74 132 76 174 Q77 190 70 192 Q62 194 58 174 L54 134 L55 120Z" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+      <!-- zones -->
+      <ellipse cx="55" cy="26" rx="18" ry="21" fill="${hfill}" stroke="${hstroke}" stroke-width="${1+hp/40}" filter="url(#fh)"/>
+      <text x="55" y="30" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="9" font-weight="600" fill="rgba(255,255,255,.9)" letter-spacing="1">${hp}%</text>
+      <path d="M32 57 Q25 67 27 104 L83 104 Q85 67 78 57 Q66 50 55 50 Q44 50 32 57Z" fill="${bfill}" stroke="${bstroke}" stroke-width="${0.8+bp/50}" filter="url(#fb2)"/>
+      <text x="55" y="80" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="9" font-weight="600" fill="rgba(255,255,255,.9)" letter-spacing="1">${bp}%</text>
+      <path d="M40 107 Q36 133 34 175 Q33 191 41 193 Q49 195 53 175 L56 135 L55 121 L54 135 L57 175 Q61 195 69 193 Q77 191 76 175 Q74 133 70 107Z" fill="${lfill}" stroke="${lstroke}" stroke-width="${0.8+lp/50}" filter="url(#fl)"/>
+      <text x="55" y="155" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="9" font-weight="600" fill="rgba(255,255,255,.8)" letter-spacing="1">${lp}%</text>
+    </svg>
+    <div class="hm-labels">
+      <div class="hm-title">Shot Heatmap</div>
+      <div class="hm-sub">Where you hit enemies</div>
+      <div class="hz-row">
+        <div class="hz-dot" style="background:#FF4655;box-shadow:0 0 9px #FF4655"></div>
+        <div class="hz-info"><div class="hz-name" style="color:#FF4655">Head</div><div class="hz-bg"><div class="hz-fill" style="width:${hp}%;background:linear-gradient(90deg,#FF4655,#ff7070)"></div></div></div>
+        <div class="hz-pct" style="color:#FF4655">${hp}%</div>
+      </div>
+      <div class="hz-row">
+        <div class="hz-dot" style="background:#f0c040;box-shadow:0 0 9px #f0c040"></div>
+        <div class="hz-info"><div class="hz-name" style="color:#f0c040">Body</div><div class="hz-bg"><div class="hz-fill" style="width:${bp}%;background:linear-gradient(90deg,#f0c040,#ffe080)"></div></div></div>
+        <div class="hz-pct" style="color:#f0c040">${bp}%</div>
+      </div>
+      <div class="hz-row">
+        <div class="hz-dot" style="background:#4fc3f7;box-shadow:0 0 9px #4fc3f7"></div>
+        <div class="hz-info"><div class="hz-name" style="color:#4fc3f7">Legs</div><div class="hz-bg"><div class="hz-fill" style="width:${lp}%;background:linear-gradient(90deg,#4fc3f7,#90e0ff)"></div></div></div>
+        <div class="hz-pct" style="color:#4fc3f7">${lp}%</div>
+      </div>
+      <div class="aim-box" style="border-left-color:${aimColor}">
+        <div class="aim-title">Aim Rating</div>
+        <div class="aim-val" style="color:${aimColor}">${aimRating}</div>
+        <div class="aim-desc">${aimDesc}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function search(){
+  const name=document.getElementById('in').value.trim();
+  const tag=document.getElementById('it').value.trim().replace('#','');
+  const region=document.getElementById('ir').value;
+  hideErr();document.getElementById('result').style.display='none';
+  if(!name) return showErr('❌ Please enter a player username.');
+  if(!tag) return showErr('❌ Please enter the player tag (the part after #).');
+  document.getElementById('loading').style.display='block';
+  try{
+    const res=await fetch(`/api/stats?name=${encodeURIComponent(name)}&tag=${encodeURIComponent(tag)}&region=${region}`);
+    const data=await res.json();
+    document.getElementById('loading').style.display='none';
+    if(data.error) return showErr(`❌ ${data.error}`);
+    const acc=data.account,mmr=data.mmr,matches=data.matches;
+    if(acc.status!==200) return showErr('❌ Player not found. Double check the username and tag!');
+    const p=acc.data;
+    const cur=mmr.data?.current;
+    const rankName=cur?.tier?.name||'Unranked';
+    const rr=cur?.rr??'—';
+    const peak=mmr.data?.peak?.tier?.name||'—';
+    const peakEp=mmr.data?.peak?.season?.short||'';
+    const cardUrl=p.card?.small||'';
+    const init=(p.name||'?')[0].toUpperCase();
+    const agentMap={},mapStats={};
+    let tK=0,tD=0,tA=0,tHS=0,tBS=0,tLS=0,wins=0,losses=0;
+    let bgUUID=AGENTS[Math.floor(Math.random()*AGENTS.length)].uuid;
+    let matchRows='';
+    if(matches.data&&matches.data.length>0){
+      matches.data.forEach((m,i)=>{
+        const me=m.players?.find(pl=>pl.name?.toLowerCase()===name.toLowerCase()&&pl.tag?.toLowerCase()===tag.toLowerCase());
+        if(!me) return;
+        const won=m.teams?.find(t=>t.team_id===me.team_id)?.won;
+        won?wins++:losses++;
+        const k=me.stats?.kills??0,d=me.stats?.deaths??0,a=me.stats?.assists??0;
+        const hs=me.stats?.headshots??0,bs=me.stats?.bodyshots??0,ls=me.stats?.legshots??0;
+        tK+=k;tD+=d;tA+=a;tHS+=hs;tBS+=bs;tLS+=ls;
+        const aName=me.agent?.name||me.character_id||'Unknown';
+        const aUUID=me.character_id||'';
+        if(aName!=='Unknown'){
+          if(!agentMap[aName]) agentMap[aName]={k:0,d:0,a:0,wins:0,games:0,hs:0,shots:0,uuid:aUUID};
+          agentMap[aName].k+=k;agentMap[aName].d+=d;agentMap[aName].a+=a;
+          agentMap[aName].hs+=hs;agentMap[aName].shots+=hs+bs+ls;
+          agentMap[aName].games++;if(won) agentMap[aName].wins++;
+          if(i===0) bgUUID=aUUID||bgUUID;
+        }
+        const mapName=m.metadata?.map?.name||'Unknown';
+        if(mapName!=='Unknown'){
+          if(!mapStats[mapName]) mapStats[mapName]={wins:0,games:0,k:0,d:0,a:0};
+          mapStats[mapName].games++;mapStats[mapName].k+=k;mapStats[mapName].d+=d;mapStats[mapName].a+=a;
+          if(won) mapStats[mapName].wins++;
+        }
+        const mode=m.metadata?.queue?.name||'?';
+        const score=m.teams?.map(t=>t.rounds_won).filter(x=>x!=null).join(' - ')||'';
+        const aIcon=aUUID?`https://media.valorant-api.com/agents/${aUUID}/displayiconsmall.png`:'';
+        const allShots=hs+bs+ls;
+        const hsM=allShots>0?Math.round(hs/allShots*100):0;
+        if(i<10){
+          matchRows+=`<div class="mr ${won?'w':'l'}">
+            ${aIcon?`<img class="mr-ico" src="${aIcon}" alt="${aName}" onerror="this.style.display='none'"/>`:''}
+            <div class="mr-res ${won?'w':'l'}">${won?'WIN':'LOSS'}</div>
+            <div class="mr-info"><div class="mr-map">${mapName}</div><div class="mr-det">${aName} · ${mode}</div></div>
+            <div class="mr-kda"><span class="k">${k}</span><span class="sl">/</span><span class="d">${d}</span><span class="sl">/</span><span class="a">${a}</span></div>
+            <div class="mr-hs">${hsM}% HS</div>
+            <div class="mr-sc">${score}</div>
+          </div>`;
+        }
+      });
+    } else {
+      matchRows=`<div class="mr"><div class="mr-det" style="flex:1;text-align:center;padding:12px 0">No recent matches found</div></div>`;
+    }
+    const total=wins+losses;
+    const wr=total>0?Math.round(wins/total*100):0;
+    const avgKD=tD>0?(tK/tD).toFixed(2):tK.toFixed(2);
+    const avgKDA=kda(tK,tD,tA);
+    const totShots=tHS+tBS+tLS;
+    const hsRate=totShots>0?Math.round(tHS/totShots*100):0;
+    const avgKPR=total>0?(tK/total).toFixed(1):'—';
+    const heatmapHtml=buildHeatmap(tHS,tBS,tLS);
+
+    // Agent cards
+    const topAgents=Object.entries(agentMap).sort((a,b)=>b[1].games-a[1].games).slice(0,4);
+    let agentHtml='';
+    topAgents.forEach(([aName,s])=>{
+      const aWR=Math.round(s.wins/s.games*100);
+      const aKD=s.d>0?(s.k/s.d).toFixed(2):s.k;
+      const aHS=s.shots>0?Math.round(s.hs/s.shots*100):0;
+      const aKPG=(s.k/s.games).toFixed(1);
+      const wrFill=aWR>=50?'#2ee89a':aWR>=40?'#f0c040':'#FF4655';
+      const wrC=aWR>=55?'green':aWR>=50?'gold':'red';
+      agentHtml+=`<div class="ac">
+        <img class="ac-img" src="https://media.valorant-api.com/agents/${s.uuid}/displayiconsmall.png" alt="${aName}" onerror="this.src=''"/>
+        <div class="ac-info">
+          <div class="ac-name">${aName}</div><div class="ac-games">${s.games} games</div>
+          <div class="ac-nums">
+            <div class="an"><div class="an-v ${wrC}">${aWR}%</div><div class="an-l">WR</div></div>
+            <div class="an"><div class="an-v">${aKD}</div><div class="an-l">K/D</div></div>
+            <div class="an"><div class="an-v gold">${aHS}%</div><div class="an-l">HS</div></div>
+            <div class="an"><div class="an-v">${aKPG}</div><div class="an-l">KPG</div></div>
+          </div>
+          <div class="wr-bg"><div class="wr-fill" style="width:${aWR}%;background:${wrFill}"></div></div>
+        </div>
+      </div>`;
+    });
+    if(!agentHtml) agentHtml=`<div style="color:var(--dim);font-size:13px;padding:14px">Not enough match data</div>`;
+
+    // Map cards with REAL images
+    const sortedMaps=Object.entries(mapStats).sort((a,b)=>b[1].games-a[1].games);
+    const bestMap=[...sortedMaps].sort((a,b)=>(b[1].wins/b[1].games)-(a[1].wins/a[1].games))[0];
+    let mapHtml='';
+    sortedMaps.slice(0,6).forEach(([mName,ms])=>{
+      const mWR=Math.round(ms.wins/ms.games*100);
+      const mKD=ms.d>0?(ms.k/ms.d).toFixed(2):ms.k;
+      const isBest=bestMap&&mName===bestMap[0];
+      const mColor=mWR>=55?'var(--green)':mWR>=50?'var(--gold)':'var(--red)';
+      const imgUrl=mapImgUrl(mName);
+      mapHtml+=`<div class="mc">
+        ${isBest?'<div class="best-badge">Best Map</div>':''}
+        ${imgUrl?`<img class="mc-img" src="${imgUrl}" alt="${mName}" onerror="this.style.display='none'"/><div class="mc-overlay"></div>`:`<div style="height:96px;background:linear-gradient(135deg,var(--dark3),var(--dark4));display:flex;align-items:center;justify-content:center"><span style="font-family:var(--fh);font-size:16px;letter-spacing:3px;color:rgba(255,255,255,.2)">${mName.toUpperCase()}</span></div>`}
+        <div class="mc-body">
+          <div class="mc-name">${mName}</div>
+          <div class="mc-games">${ms.games} games</div>
+          <div class="mc-wr" style="color:${mColor}">${mWR}% WR</div>
+          <div class="mc-kd">K/D: ${mKD} · ${ms.wins}W ${ms.games-ms.wins}L</div>
+        </div>
+      </div>`;
+    });
+    if(!mapHtml) mapHtml=`<div style="color:var(--dim);font-size:13px;padding:14px">Not enough match data</div>`;
+
+    const avatarHtml=cardUrl?`<img class="pav" src="${cardUrl}" alt="card" onerror="this.style.display='none'"/>`:`<div class="pav-ph">${init}</div>`;
+
+    const html=`<div class="fu">
+      <div class="profile-card d1 fu">
+        <div class="pbanner">
+          <div class="pbanner-agent"><img src="https://media.valorant-api.com/agents/${bgUUID}/fullportrait.png" alt="" onerror="this.style.display='none'"/></div>
+          <div class="pbanner-fade"></div>
+        </div>
+        <div class="pbody">
+          <div class="pav-row">${avatarHtml}<div><div class="pname">${p.name}<span class="ptag">#${p.tag}</span></div><div class="pmeta">${(p.region||region).toUpperCase()} Server</div></div></div>
+          <div class="ptags">
+            <span class="pt pt-gold">⭐ Level ${p.account_level}</span>
+            <span class="pt pt-red">${rankName}</span>
+            <span class="pt pt-purple">${rr} RR</span>
+            <span class="pt pt-blue">Peak: ${peak}${peakEp?' · '+peakEp:''}</span>
+          </div>
+        </div>
+      </div>
+      <div class="sh d2 fu">Overview Stats</div>
+      <div class="sg6 d2 fu">
+        <div class="sc sc-r"><div class="sc-lbl">Win Rate</div><div class="sc-val ${wrClass(wr)}">${total>0?wr+'%':'—'}</div><div class="sc-sub">${wins}W · ${losses}L</div></div>
+        <div class="sc sc-go"><div class="sc-lbl">K/D Ratio</div><div class="sc-val gold">${avgKD}</div><div class="sc-sub">${tK} total kills</div></div>
+        <div class="sc sc-p"><div class="sc-lbl">KDA Ratio</div><div class="sc-val purple">${avgKDA}</div><div class="sc-sub">K+A / D</div></div>
+        <div class="sc sc-go"><div class="sc-lbl">Headshot %</div><div class="sc-val gold">${hsRate}%</div><div class="sc-sub">${tHS} headshots</div></div>
+        <div class="sc sc-b"><div class="sc-lbl">Avg Kills/Game</div><div class="sc-val blue">${avgKPR}</div><div class="sc-sub">Last ${total} games</div></div>
+        <div class="sc sc-gr"><div class="sc-lbl">Matches Played</div><div class="sc-val green">${total}</div><div class="sc-sub">Recent matches</div></div>
+      </div>
+      <div class="sh d3 fu">Body Shot Heatmap</div>
+      ${heatmapHtml}
+      <div class="sh d3 fu">Top Agents</div>
+      <div class="ag d3 fu">${agentHtml}</div>
+      <div class="sh d4 fu">Map Performance</div>
+      <div class="mg d4 fu">${mapHtml}</div>
+      <div class="sh">Recent Matches</div>
+      <div class="mb">${matchRows}</div>
+    </div>`;
+
+    const el=document.getElementById('result');el.innerHTML=html;el.style.display='block';
+  } catch(e){showErr(`❌ Error: ${e.message}`)}
+}
+
+['in','it'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter') search()}));
+</script>
+</body>
+</html>
